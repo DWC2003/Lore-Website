@@ -1,35 +1,88 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react';
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function TimelineEvent({ title, year, description }) {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="timeline-item">
+      <div className="timeline-marker" />
+      <div className="timeline-content">
+        <h2>{title}</h2>
+        <p>Year {year}</p>
+        <p>{description}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
-export default App
+
+
+function App() {
+  const [events, setEvents] = useState([
+    {
+      title: "The Fall of Avalon",
+      year: "?",
+      description: "The end of the old world and beginning of the new."
+    }
+  ])
+
+  const [title, setTitle] = useState("");
+  const [year, setYear] = useState("");
+  const [description, setDescription] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault()
+
+    const newEvent = {
+      title,
+      year,
+      description
+    }
+
+    setEvents([...events, newEvent])
+
+    setTitle('')
+    setYear('')
+    setDescription('')
+  }
+
+  return (
+    <div className="App">
+      <form onSubmit={handleSubmit}>
+        <input
+          placeholder="Event title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+        />
+          
+        <input
+          placeholder="Year"
+          value={year}
+          onChange={e => setYear(e.target.value)}
+        />
+
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+
+        <button type="submit">Add Event</button>
+      </form>
+
+      <h1>Timeline</h1>
+      <div className="timeline">
+        {events.map((event, index) => (
+          <TimelineEvent
+            key={index}
+            title={event.title}
+            year={event.year}
+            description={event.description}
+          />
+        ))}
+      </div>
+      
+    </div>
+  );
+}
+
+export default App;
