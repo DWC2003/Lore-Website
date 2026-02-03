@@ -54,6 +54,19 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+.timeline-content:hover {
+  outline: 20px gold;
+  background: black;
+  transform: translateX(30px)
+}
+
+.change-card {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

@@ -1,15 +1,50 @@
 import { useState } from 'react';
 import './App.css'
 
-function TimelineEvent({ title, year, description }) {
+function TimelineEvent({ yearGroup }) {
+  const [idx, setIdx] = useState(0);
+
+  const current = yearGroup[idx];
+
+  function nextEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIdx((prev) => (prev + 1) % yearGroup.length)
+  }
+
+  function prevEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIdx((prev) => (prev - 1 + yearGroup.length) % yearGroup.length)
+  }
+
+  let mybutton = ">"
   return (
     <div className="timeline-item">
       <div className="timeline-marker" />
-      <div className="timeline-content">
-        <h2>{title}</h2>
-        <p>Year {year}</p>
-        <p>{description}</p>
-      </div>
+      <button className="timeline-content">
+        <h2>{current.title}</h2>
+        <p>Year {current.year}</p>
+        <p>{current.description}</p>
+
+        {yearGroup.length > 1 && (
+          <div className="card-controls">
+            <button type="button" className="change-card" onClick={prevEvent}>
+              {"<"}
+            </button>
+
+            <span className="counter">
+              {idx + 1}/{yearGroup.length}
+            </span>
+
+            <button type="button" className="change-card" onClick={nextEvent}>
+              {">"}
+            </button>
+          </div>
+        )}
+      </button>
     </div>
   )
 }
@@ -18,11 +53,13 @@ function TimelineEvent({ title, year, description }) {
 
 function App() {
   const [events, setEvents] = useState([
-    {
+    [
+      {
       title: "The End of the World",
-      year: "?",
+      year: 0,
       description: "The end of the old world and beginning of the new."
-    }
+      }
+    ]
   ])
 
   const [title, setTitle] = useState("");
@@ -38,11 +75,35 @@ function App() {
       description
     }
 
-    setEvents([...events, newEvent])
+    let found = false
+
+    const updated = events.map((yearGroup) => {
+    // yearGroup is like: [{year: 2020, ...}, {year: 2020, ...}]
+    if (Number(yearGroup[0].year) === Number(year)) {
+      found = true
+      return [...yearGroup, newEvent] // add to that year's list
+    }
+      return yearGroup
+    })
+
+    setEvents(updated)
+
+    if (found === false){
+      const newEventArray = [newEvent]
+      const updatedEvents = [...events, newEventArray].sort(
+        (a, b) => Number(a[0].year) - Number(b[0].year)
+      )
+
+      setEvents(updatedEvents)
+    }
+
+    
 
     setTitle('')
     setYear('')
     setDescription('')
+
+    
   }
 
   return (
@@ -74,9 +135,7 @@ function App() {
         {events.map((event, index) => (
           <TimelineEvent
             key={index}
-            title={event.title}
-            year={event.year}
-            description={event.description}
+            yearGroup = {event}
           />
         ))}
       </div>
