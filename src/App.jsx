@@ -19,7 +19,7 @@ function TimelineEvent({ title, year, description }) {
 function App() {
   const [events, setEvents] = useState([
     {
-      title: "The Fall of Avalon",
+      title: "The End of the World",
       year: "?",
       description: "The end of the old world and beginning of the new."
     }
