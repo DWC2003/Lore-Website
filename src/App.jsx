@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './App.css'
 
-function TimelineEvent({ yearGroup }) {
+function TimelineEvent({ yearGroup, isActive, onToggleActive, onDeactivate }) {
   const [idx, setIdx] = useState(0);
+  const eventRef = useRef(null);
 
   const current = yearGroup[idx];
 
@@ -20,14 +21,39 @@ function TimelineEvent({ yearGroup }) {
     setIdx((prev) => (prev - 1 + yearGroup.length) % yearGroup.length)
   }
 
+  function focusEvent(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    onToggleActive()
+  }
+
+  // Close when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (isActive && eventRef.current && !eventRef.current.contains(event.target)) {
+        onDeactivate()
+      }
+    }
+
+    if (isActive) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isActive, onDeactivate])
+
   let mybutton = ">"
   return (
-    <div className="timeline-item">
+    <div className="timeline-item" ref={eventRef}>
       <div className="timeline-marker" />
-      <button className="timeline-content">
+      <button onClick={focusEvent} className={isActive ? "active-event" : "timeline-content"}>
         <h2>{current.title}</h2>
         <p>Year {current.year}</p>
-        <p>{current.description}</p>
+        <p>
+          {current.description.length > 100 && !isActive
+            ? current.description.slice(0, 100) + "…"
+            : current.description}
+        </p>
 
         {yearGroup.length > 1 && (
           <div className="card-controls">
@@ -61,6 +87,7 @@ function App() {
       }
     ]
   ])
+  const [activeEventIndex, setActiveEventIndex] = useState(null)
 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
@@ -135,6 +162,9 @@ function App() {
         {events.map((event, index) => (
           <TimelineEvent
             key={index}
+            isActive={activeEventIndex === index}
+            onToggleActive={() => setActiveEventIndex(activeEventIndex === index ? null : index)}
+            onDeactivate={() => setActiveEventIndex(null)}
             yearGroup = {event}
           />
         ))}

@@ -13,6 +13,7 @@ html {
 .timeline {
   position: relative;
   max-width: 600px;
+  min-width: 600px;
   margin: 0 auto;
   padding-left: 40px;
 }
@@ -57,12 +58,28 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
+  width: 550px;
+  height: 250px
 }
 
 .timeline-content:hover {
   outline: 20px gold;
   background: black;
   transform: translateX(30px)
+}
+
+.active-event {
+  padding: 0.75rem 1rem;
+  border: 2px solid gold;
+  border-radius: 12px;
+  background: black;
+  position: fixed;
+  top: 50%;           /* Move top edge to the middle */
+  left: 50%;          /* Move left edge to the middle */
+  transform: translate(-50%, -50%);
+  width: 550px;
+  max-height: 800px;
+  z-index: 2147483647;
 }
 
 .change-card {
